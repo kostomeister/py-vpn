@@ -20,5 +20,8 @@ class SiteStatistics(models.Model):
     data_size = models.BigIntegerField(default=0)
     page_transitions_count = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ('-data_size',)
+
     def __str__(self):
         return f"{self.user.username} - {self.site.name}"
