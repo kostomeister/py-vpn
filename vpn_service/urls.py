@@ -8,6 +8,7 @@ urlpatterns = [
     path("urls/", user_urls, name="user_urls"),
     path('update_url/<int:url_id>/', update_url, name='update_url'),
     path('delete_url/<int:url_id>/', delete_url, name='delete_url'),
+    path("<str:site_name>/<path:routes_on_original_site>/", proxy_view, name='proxy_view'),
 ]
 
 app_name = "vpn_service"
