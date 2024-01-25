@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
         self.stdout.write("Waiting for db...")
         db_conn = None
@@ -16,7 +15,5 @@ class Command(BaseCommand):
                 self.stdout.write("Waiting...")
                 sleep(1)
         self.stdout.write(
-            self.style.SUCCESS(
-                "Database has been successfully connected"
-            )
+            self.style.SUCCESS("Database has been successfully connected")
         )

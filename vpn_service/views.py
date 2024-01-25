@@ -10,12 +10,16 @@ from .utils import update_site_statistics
 
 
 def index(request):
-    return render(request, 'vpn_service/index.html')
+    return render(request, "vpn_service/index.html")
 
 
 def statistics(request):
     statistics_data = SiteStatistics.objects.filter(user=request.user)
-    return render(request, 'vpn_service/statistics.html', {'statistics_data': statistics_data})
+    return render(
+        request,
+        "vpn_service/statistics.html",
+        {"statistics_data": statistics_data}
+    )
 
 
 @login_required
@@ -23,40 +27,48 @@ def user_urls(request):
     user = request.user
     user_sites = Site.objects.filter(user=user)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = URLForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('vpn_service:user_urls')
+            return redirect("vpn_service:user_urls")
     else:
         form = URLForm()
 
-    return render(request, 'vpn_service/user_urls.html', {'user_sites': user_sites, 'form': form})
+    return render(
+        request,
+        "vpn_service/user_urls.html",
+        {"user_sites": user_sites, "form": form}
+    )
 
 
 @login_required
 def update_url(request, url_id):
     user_url = get_object_or_404(Site, id=url_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = URLForm(request.POST, instance=user_url)
         if form.is_valid():
             site = form.save(commit=False)
             site.user = request.user
             site.save()
-            return redirect('vpn_service:user_urls')
+            return redirect("vpn_service:user_urls")
     else:
         form = URLForm(instance=user_url)
-    return render(request, 'vpn_service/update_url.html', {'form': form, 'user_url': user_url})
+    return render(
+        request,
+        "vpn_service/update_url.html",
+        {"form": form, "user_url": user_url}
+    )
 
 
 @login_required
 def delete_url(request, url_id):
     user_url = get_object_or_404(Site, id=url_id, user=request.user)
 
-    if request.method == 'GET':
+    if request.method == "GET":
         user_url.delete()
 
-    return redirect('vpn_service:user_urls')
+    return redirect("vpn_service:user_urls")
 
 
 @login_required
@@ -74,7 +86,7 @@ def proxy_view(request, site_name, routes_on_original_site):
         process_static_content(soup, target_url)
         process_links(soup, site_name, base_url)
 
-        return HttpResponse(str(soup), content_type='text/html')
+        return HttpResponse(str(soup), content_type="text/html")
 
     if request.method == "POST":
         response = send_post(request, target_url)
@@ -82,5 +94,5 @@ def proxy_view(request, site_name, routes_on_original_site):
         return HttpResponse(
             response.content,
             status=response.status_code,
-            content_type=response.headers['content-type']
+            content_type=response.headers["content-type"],
         )

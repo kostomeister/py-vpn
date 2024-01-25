@@ -5,8 +5,8 @@ from .models import Site
 class URLForm(forms.ModelForm):
     class Meta:
         model = Site
-        fields = ['name', 'url']
+        fields = ["name", "url"]
         labels = {
-            'name': 'Name of site',
-            'url': 'URL to add',
+            "name": "Name of site",
+            "url": "URL to add",
         }

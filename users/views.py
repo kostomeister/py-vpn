@@ -13,7 +13,7 @@ class ProfileView(View):
     template_name = "users/profile.html"
 
     def get(self, request, *args, **kwargs):
-        user = get_user_model().objects.get(pk=kwargs['pk'])
+        user = get_user_model().objects.get(pk=kwargs["pk"])
         return render(request, self.template_name, {"user": user})
 
 
@@ -26,15 +26,17 @@ class ProfileUpdateView(UpdateView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj != self.request.user:
-            raise HttpResponseForbidden("You don't have permission to access this page")
+            raise HttpResponseForbidden(
+                "You don't have permission to access this page"
+            )
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, 'Profile updated successfully.')
+        messages.success(self.request, "Profile updated successfully.")
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Error updating profile.')
+        messages.error(self.request, "Error updating profile.")
         return super().form_invalid(form)
 
 
