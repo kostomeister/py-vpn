@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Edit URL</h2>
+
+    <form method="post" class="mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" class="btn btn-primary" value="Save Changes">
+    </form>
+
+    <p class="mt-3">
+      <a href="{% url 'vpn_service:user_urls' %}">Back to Your URLs</a>
+    </p>
+  </div>
+{% endblock %}

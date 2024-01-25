@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Site Statistics{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1 class="mb-4">Your Site Statistics</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Site</th>
+          <th scope="col">Data Size</th>
+          <th scope="col">Page Transitions Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stat in statistics_data %}
+          <tr>
+            <td>{{ stat.site.name }}</td>
+            <td>{{ stat.data_size }}</td>
+            <td>{{ stat.page_transitions_count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
