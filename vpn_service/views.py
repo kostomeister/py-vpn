@@ -75,8 +75,10 @@ def delete_url(request, url_id):
 @csrf_exempt
 def proxy_view(request, site_name, routes_on_original_site):
     target_url = f"https://{routes_on_original_site}"
+
+    site = get_object_or_404(Site, name=site_name)
+
     if request.method == "GET":
-        site = get_object_or_404(Site, name=site_name)
         base_url = site.url
 
         soup = parse_page(target_url)
@@ -90,6 +92,8 @@ def proxy_view(request, site_name, routes_on_original_site):
 
     if request.method == "POST":
         response = send_post(request, target_url)
+
+        update_site_statistics(request.user, site, response)
 
         return HttpResponse(
             response.content,
