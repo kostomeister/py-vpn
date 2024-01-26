@@ -30,7 +30,9 @@ def user_urls(request):
     if request.method == "POST":
         form = URLForm(request.POST)
         if form.is_valid():
-            form.save()
+            site = form.save(commit=False)
+            site.user = user
+            site.save()
             return redirect("vpn_service:user_urls")
     else:
         form = URLForm()
