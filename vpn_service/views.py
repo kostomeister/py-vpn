@@ -32,7 +32,7 @@ def user_urls(request):
         form = URLForm(request.POST)
         if form.is_valid():
             site = form.save(commit=False)
-            site.user_id = request.user.id
+            site.user = user
             site.save()
             return redirect("vpn_service:user_urls")
     else:
