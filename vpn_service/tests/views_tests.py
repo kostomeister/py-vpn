@@ -42,7 +42,7 @@ class ViewsTest(TestCase):
     def test_proxy_view_get(self):
         response = self.client.get(
             reverse(
-                "vpn_service:proxy_view", args=["Test Site", "www.example.com/page"]
+                "vpn_service:proxy_view", args=["Test Site", "example.com"]
             )
         )
         self.assertEqual(response.status_code, 200)
@@ -76,7 +76,7 @@ class ViewsTest(TestCase):
         initial_count = SiteStatistics.objects.filter(user=self.user).count()
         response = self.client.get(
             reverse(
-                "vpn_service:proxy_view", args=["Test Site", "www.example.com/page"]
+                "vpn_service:proxy_view", args=["Test Site", "example.com"]
             )
         )
         updated_count = SiteStatistics.objects.filter(user=self.user).count()
