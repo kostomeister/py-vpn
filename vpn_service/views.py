@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -5,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import URLForm
 from .models import Site, SiteStatistics
-from .parse import parse_page, process_static_content, process_links, send_post
+from .parse import ContentProcessor, RequestHandler
 from .utils import update_site_statistics
 
 
@@ -30,7 +31,9 @@ def user_urls(request):
     if request.method == "POST":
         form = URLForm(request.POST)
         if form.is_valid():
-            form.save()
+            site = form.save(commit=False)
+            site.user_id = request.user.id
+            site.save()
             return redirect("vpn_service:user_urls")
     else:
         form = URLForm()
@@ -77,26 +80,27 @@ def proxy_view(request, site_name, routes_on_original_site):
     target_url = f"https://{routes_on_original_site}"
 
     site = get_object_or_404(Site, name=site_name)
+    base_url = site.url
 
-    if request.method == "GET":
-        base_url = site.url
+    with RequestHandler() as request_handler:
+        if request.method == "GET":
+            response = request_handler.send_get(target_url)
 
-        soup = parse_page(target_url)
+        if request.method == "POST":
+            response = request_handler.send_post(
+                request.POST.copy(),
+                target_url,
+                request.COOKIES.get("csrftoken")
+            )
 
-        update_site_statistics(request.user, site, soup)
+    soup = ContentProcessor.get_soup(response.content)
 
-        process_static_content(soup, target_url)
-        process_links(soup, site_name, base_url)
+    update_site_statistics(request.user, site, response)
 
-        return HttpResponse(str(soup), content_type="text/html")
+    ContentProcessor.process_static_content(soup, target_url)
+    ContentProcessor.process_links(soup, site_name, base_url)
 
-    if request.method == "POST":
-        response = send_post(request, target_url)
-
-        update_site_statistics(request.user, site, response)
-
-        return HttpResponse(
-            response.content,
-            status=response.status_code,
-            content_type=response.headers["content-type"],
-        )
+    return HttpResponse(
+        str(soup),
+        status=response.status_code,
+    )
